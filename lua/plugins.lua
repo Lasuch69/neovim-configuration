@@ -1,61 +1,79 @@
 --[[
   File: plugins.lua
-  Description: This file needed for loading plugin list into lazy.nvim and loading plugins
+  Description: This file needed for bootstraping packer.nvim and loading plugins
   Info: Use <zo> and <zc> to open and close foldings
   See: https://github.com/wbthomason/packer.nvim
 ]]
 
 require "helpers/globals"
+cmd [[packadd packer.nvim]]
 
-return {
+return require('packer').startup(function(use)
+  -- Packer can manage itself
+  use 'wbthomason/packer.nvim'
+
+  -- Theme {{{
+  use {
+    "folke/tokyonight.nvim",
+    config = function()
+      cmd.colorscheme('tokyonight')
+    end
+  }
+  -- }}}
+
+  -- TreeSitter {{{
+  use {
+    "nvim-treesitter/nvim-treesitter",
+    run = ":TSUpdate",
+    config = function()
+      require "extensions.treesitter"
+    end
+  }
+  -- }}}
+
   -- Mason {{{
-  {
+  use {
     "williamboman/mason.nvim",
-    build = ":MasonUpdate",
-    dependencies = {
+    run = ":MasonUpdate",
+    requires = {
       "williamboman/mason-lspconfig.nvim",
       "neovim/nvim-lspconfig",
     },
     config = function()
       require "extensions.mason"
     end
-  },
-  -- }}}
-
-  -- Neo Tree {{{
-  {
-    "nvim-neo-tree/neo-tree.nvim",
-    branch = "v2.x",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-    },
-    config = function ()
-      require "extensions.neotree"
-    end
-  },
+  }
   -- }}}
 
   -- Telescope {{{
-  {
+  use {
     'nvim-telescope/telescope.nvim',
     tag = '0.1.1',
-    lazy = false,
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "ahmedkhalf/project.nvim",
+    requires = {
+      {'nvim-lua/plenary.nvim'}
     },
     config = function()
       require "extensions.telescope"
     end
-  },
+  }
+  -- }}}
+
+  -- Nvim Tree {{{
+  use {
+    'nvim-tree/nvim-tree.lua',
+    requires = {
+      'nvim-tree/nvim-web-devicons', -- optional
+    },
+    config = function()
+      require "extensions.nvimtree"
+    end
+  }
   -- }}}
 
   -- CMP {{{
-  {
+  use {
     'hrsh7th/nvim-cmp',
-    event = "InsertEnter",
-    dependencies = {
+    requires = {
       'L3MON4D3/LuaSnip',
       'saadparwaiz1/cmp_luasnip',
       'hrsh7th/cmp-nvim-lsp',
@@ -68,62 +86,51 @@ return {
     config = function()
       require "extensions.cmp"
     end
-  },
+  }
+  -- }}}
+
+  -- Autopairs {{{
+  use {
+	  "windwp/nvim-autopairs",
+    config = function()
+      require("nvim-autopairs").setup {}
+    end
+  }
+-- }}}
+
+  -- Rust Tools {{{
+  use {
+    'simrat39/rust-tools.nvim'
+  }
   -- }}}
 
   -- LSP Kind {{{
-  {
+  use {
     'onsails/lspkind-nvim',
-    lazy = true,
     config = function()
       require "extensions.lspkind"
     end
-  },
+  }
   -- }}}
 
-  -- Git Signs{{{
-  {
+    -- Git Signs{{{
+  use {
     'lewis6991/gitsigns.nvim',
-    lazy = false,
     config = function()
       require "extensions.gitsigns"
     end
-  },
+  }
   -- }}}
 
   -- Trouble {{{
-  {
+  use {
     "folke/trouble.nvim",
-    lazy = true,
-    dependencies = "kyazdani42/nvim-web-devicons",
+    requires = "kyazdani42/nvim-web-devicons",
     config = function()
       require "extensions.trouble"
     end,
-  },
+  }
   -- }}}
+end)
 
-  -- TreeSitter {{{
-  {
-    "nvim-treesitter/nvim-treesitter",
-    lazy = false,
-    build = ":TSUpdate",
-    event = { "BufReadPost", "BufNewFile" },
-    config = function()
-      require "extensions.treesitter"
-    end
-  },
-  -- }}}
-
-  -- Theme: Gruvbox Material {{{
-  {
-    "sainnhe/gruvbox-material",
-    lazy = false,
-    config = function ()
-      require "extensions.colorscheme.gruvbox"
-    end
-  },
-  -- }}}
-
-}
-
--- vim:tabstop=2 shiftwidth=2 expandtab syntax=lua foldmethod=marker foldlevelstart=0 foldlevel=0
+-- vim: tabstop=2 shiftwidth=2 expandtab syntax=lua foldmethod=marker foldlevelstart=1

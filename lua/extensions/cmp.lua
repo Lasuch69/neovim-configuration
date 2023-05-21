@@ -5,12 +5,19 @@
 ]]
 
 local cmp = require('cmp')
+local luasnip = require('luasnip')
 local lspkind = require('lspkind')
+
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+cmp.event:on(
+  'confirm_done',
+  cmp_autopairs.on_confirm_done()
+)
 
 cmp.setup{
   snippet = {
     expand = function(args)
-      require'luasnip'.lsp_expand(args.body) -- Luasnip expand
+      luasnip.lsp_expand(args.body) -- Luasnip expand
     end,
   },
 
@@ -19,8 +26,14 @@ cmp.setup{
 
     -- Autocompletion menu
     ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i' }),
-    ['<CR>'] = cmp.config.disable,                      -- Turn off autocomplete on <CR>
-    ['<C-y>'] = cmp.mapping.confirm({ select = true }), -- Turn on autocomplete on <C-y>
+
+    -- ['<CR>'] = cmp.config.disable,                   -- Turn off autocomplete on <CR>
+    -- ['<C-y>'] = cmp.mapping.confirm({ select = true }), -- Turn on autocomplete on <C-y>
+
+    ["<CR>"] = cmp.mapping.confirm {
+      behavior = cmp.ConfirmBehavior.Replace,
+      select = false,
+    },
 
     -- Use <C-e> to abort autocomplete
     ['<C-e>'] = cmp.mapping({
@@ -29,8 +42,31 @@ cmp.setup{
     }),
 
     -- Use <C-p> and <C-n> to navigate through completion variants
-    ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 'c' }),
-    ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 'c' }),
+    -- ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 'c' }),
+    -- ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 'c' }),
+
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable() 
+      -- they way you will only jump inside the snippet region
+      elseif luasnip.expand_or_locally_jumpable() then
+        luasnip.expand_or_jump()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+
+    ["<S-Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+
   },
 
   sources = cmp.config.sources({

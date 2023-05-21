@@ -12,10 +12,19 @@ cmd[[filetype plugin on]]
 -- Disable comments on pressing Enter
 cmd[[autocmd FileType * setlocal formatoptions-=cro]]
 
+-- Custom {{{
+opt.nu = true
+opt.swapfile = false
+opt.backup = false
+opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
+opt.undofile = true
+opt.termguicolors = true
+-- }}}
+
 -- Tabs {{{
 opt.expandtab = true                -- Use spaces by default
-opt.shiftwidth = 2                  -- Set amount of space characters, when we press "<" or ">"
-opt.tabstop = 2                     -- 1 tab equal 2 spaces
+opt.shiftwidth = 4                  -- Set amount of space characters, when we press "<" or ">"
+opt.tabstop = 4                     -- 1 tab equal 4 spaces
 opt.smartindent = true              -- Turn on smart indentation. See in the docs for more info
 -- }}}
 
@@ -38,6 +47,9 @@ opt.showmatch = true                -- Highlight search instances
 -- Window {{{
 opt.splitbelow = true               -- Put new windows below current
 opt.splitright = true               -- Put new vertical splits to right
+opt.signcolumn = 'yes'              -- Reserve space for LSP icons
+opt.scrolloff = 8
+opt.updatetime = 50
 -- }}}
 
 -- Wild Menu {{{

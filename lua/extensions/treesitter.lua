@@ -11,13 +11,15 @@ require'nvim-treesitter.configs'.setup {
     "lua",
     "typescript",
     "javascript",
-    "rust" 
+    "rust",
+    "vue",
+    "html",
+    "css"
   },
 
   -- Install all parsers synchronously
   sync_install = false,
 
-  -- Подсветка
   highlight = {
     -- Enabling highlight for all files
     enable = true,
