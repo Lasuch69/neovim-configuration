@@ -93,7 +93,9 @@ return require('packer').startup(function(use)
   use {
 	  "windwp/nvim-autopairs",
     config = function()
-      require("nvim-autopairs").setup {}
+      require("nvim-autopairs").setup({
+        enable_check_bracket_line = false
+      })
     end
   }
 -- }}}
@@ -101,6 +103,19 @@ return require('packer').startup(function(use)
   -- Rust Tools {{{
   use {
     'simrat39/rust-tools.nvim'
+  }
+  -- }}}
+
+  -- Harpoon {{{
+  use {
+    'ThePrimeagen/harpoon',
+    config = function()
+      require("harpoon").setup({
+        menu = {
+          width = api.nvim_win_get_width(0) - 4,
+        }
+      })
+    end
   }
   -- }}}
 
